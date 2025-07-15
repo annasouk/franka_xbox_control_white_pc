@@ -7,15 +7,15 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 class XboxController(object):
-    MAX_TRIG_VAL = math.pow(2, 8)
-    MAX_JOY_VAL = math.pow(2, 15)
+    MAX_TRIG_VAL = 255
+    MAX_JOY_VAL = 255
 
     def __init__(self):
 
-        self.LeftJoystickY = 0
-        self.LeftJoystickX = 0
-        self.RightJoystickY = 0
-        self.RightJoystickX = 0
+        self.LeftJoystickY = 0.
+        self.LeftJoystickX = 0.
+        self.RightJoystickY = 0.
+        self.RightJoystickX = 0.
         self.LeftTrigger = 0
         self.RightTrigger = 0
         self.LeftBumper = 0
@@ -42,17 +42,17 @@ class XboxController(object):
 
 
     def read(self): # return the buttons/triggers that you care about in this methode
-        left_x = self.LeftJoystickX
-        left_y = self.LeftJoystickY
-        right_z = self.RightJoystickY
+        left_x = -self.LeftJoystickY
+        left_y = -self.LeftJoystickX
+        right_z = -self.RightJoystickY
 
         roll_neg = self.X
         roll_pos = self.B
         roll = roll_pos - roll_neg
 
 
-        pitch_neg = self.Y
-        pitch_pos = self.A
+        pitch_neg = self.A
+        pitch_pos = self.Y
         pitch = pitch_pos - pitch_neg
 
         yaw_neg = self.LeftBumper
@@ -61,12 +61,16 @@ class XboxController(object):
         left_trigger = self.LeftTrigger
         right_trigger = self.RightTrigger
 
-        # print(f"{roll_neg=}")
-        # print(f"{roll_pos=}")
-        # print(f"{pitch_pos=}")
-        # print(f"{pitch_neg=}")
-        # print(f"{yaw_pos=}")
-        # print(f"{yaw_neg=}")
+        print(f"{left_x=}")
+        print(f"{left_y=}")
+        print(f"{right_z=}")
+
+        print(f"{roll_neg=}")
+        print(f"{roll_pos=}")
+        print(f"{pitch_pos=}")
+        print(f"{pitch_neg=}")
+        print(f"{yaw_pos=}")
+        print(f"{yaw_neg=}")
 
 
         return [left_x, left_y, right_z, roll, pitch, yaw, left_trigger, right_trigger]
@@ -77,13 +81,13 @@ class XboxController(object):
             events = get_gamepad()
             for event in events:
                 if event.code == 'ABS_Y':
-                    self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.LeftJoystickY = (event.state-128.0) / 128.0 # normalize between -1 and 1
                 elif event.code == 'ABS_X':
-                    self.LeftJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.LeftJoystickX = (event.state-128.0) / 128.0 # normalize between -1 and 1
                 elif event.code == 'ABS_RY':
-                    self.RightJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.RightJoystickY = (event.state-128.0) / 128.0 # normalize between -1 and 1
                 elif event.code == 'ABS_RX':
-                    self.RightJoystickX = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
+                    self.RightJoystickX = (event.state-128.0) / 128.0 # normalize between -1 and 1
                 elif event.code == 'ABS_Z':
                     self.LeftTrigger = event.state / XboxController.MAX_TRIG_VAL # normalize between 0 and 1
                 elif event.code == 'ABS_RZ':
@@ -92,13 +96,13 @@ class XboxController(object):
                     self.LeftBumper = event.state
                 elif event.code == 'BTN_TR':
                     self.RightBumper = event.state
-                elif event.code == 'BTN_EAST':
+                elif event.code == 'BTN_SOUTH':
                     self.A = event.state
                 elif event.code == 'BTN_NORTH':
                     self.Y = event.state #previously switched with X
                 elif event.code == 'BTN_WEST':
                     self.X = event.state #previously switched with Y
-                elif event.code == 'BTN_SOUTH':
+                elif event.code == 'BTN_EAST':
                     self.B = event.state
                 elif event.code == 'BTN_THUMBL':
                     self.LeftThumb = event.state
@@ -127,7 +131,7 @@ if __name__ == '__main__':
 
     while True:
         multiplier = 10.0 / 100.0
-        angle_multiplier = 2.0
+        angle_multiplier = 1.0
         left_x, left_y, right_z, roll, pitch, yaw, left_trigger, right_trigger = joy.read()
         
         left_x = int(10 * left_x) / 10.0

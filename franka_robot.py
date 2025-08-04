@@ -45,11 +45,11 @@ class RobotInputs:
 
 
 class FrankaRobot(object):
-    def __init__(self, robot_ip="192.168.0.2"):
+    def __init__(self, robot_ip="192.168.0.198"):
         self.robot = Robot(robot_ip)
-        self.gripper = Gripper(robot_ip)
+        # self.gripper = Gripper(robot_ip)
         self.gripper_speed = 0.05  # m/s
-        self.min_gripper_pos_change = self.gripper.max_width / 10.0
+        # self.min_gripper_pos_change = self.gripper.max_width / 10.0
         self.robot.recover_from_errors()
         # This controls the max percentage of jerk, acceleration, and velocity allowed in a motion.
         # A value of 0.05 means 5% of the maximum allowed.
@@ -59,7 +59,10 @@ class FrankaRobot(object):
     def move_home(self):
         self.robot.move(self.home)
         # self.gripper.move(self.gripper.max_width, self.gripper_speed)
-        self.gripper.move(0, self.gripper_speed)
+        # self.gripper.move(0, self.gripper_speed)
+
+    def print_q(self):
+        print(f"{self.robot.current_joint_positions=}")
 
     def rotate_to_zero(self):
         quat = Rotation.from_euler("xyz", [0, 0, 0]).as_quat()
@@ -75,6 +78,7 @@ class FrankaRobot(object):
                            robot_inputs.left_y, robot_inputs.right_z]
         angular_velocity = [robot_inputs.roll,
                             robot_inputs.pitch, robot_inputs.yaw]
+    
 
         self.move_velocity_array(
             linear_velocity, angular_velocity, robot_inputs.gripper, duration_ms=duration_ms)

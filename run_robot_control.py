@@ -35,11 +35,12 @@ class RobotController:
             while self.running:
                 loop_start = time.time()
 
-                # print(self.robot.robot.current_joint_positions)
+                print(f"{self.robot.print_q()=}")
 
                 try:
                     # Get controller inputs
                     robot_inputs = self.joy.get_robot_inputs_from_controller()
+                    # print(robot_inputs)
 
                     # Send commands to robot
                     self.robot.move_velocity_inputs(robot_inputs)
